@@ -1,1 +1,1 @@
-"# bower-locker" 
+# bower-locker
