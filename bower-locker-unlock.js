@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 var fs = require('fs');
 
-/*
-On `bower-locker unlock`:
-* Replace `bower.json` with `bower-locker.bower.json` contents
+/**
+ * Function to unlock the `bower.json` file by returning it to its unlocked version
+ *   The unlocked version is stored at `bower-locker.bower.json`
+ * @param isVerbose {Boolean} Flag to indicate whether we should log verbosely or not
+ * @return {null}
  */
-function unlock() {
-    console.log('Start unlocking ...');
+function unlock(isVerbose) {
+    if (isVerbose) {
+        console.log('Start unlocking ...');
+    }
 
     // Load bower.json and make sure it is a locked bower.json file
     var bowerConfigStr = fs.readFileSync("bower.json", {encoding: "utf8"});

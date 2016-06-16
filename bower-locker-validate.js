@@ -2,17 +2,20 @@
 var fs = require('fs');
 var bowerInfo = require('./bower-locker-common.js');
 
-/*
- On `bower-locker validate`:
- * Load `bower.json`
- * Make sure it is a locked `bower.json`
- * Go through all of the bower_components directory again to regenerate the list of dependencies
- * Compare that list to the list recorded in the `bower.json` resolutions block
- * Compare and log version differences
- * Compare and log added or removed components
+/**
+ * Function to validate that the currently locked `bower.json` matches the dependencies within the `bower_components`
+ *   directory.
+ *   It checks:
+ *     * All the components within the `bower_components` directory are listed within the `bower.json`
+ *     * All the components within the `bower.json` exist within the `bower_components` directory
+ *     * All components within the `bower_components` directory are of the version specified within `bower.json`
+ * @param isVerbose {Boolean} Flag to indicate whether we should log verbosely or not
+ * @return {null}
  */
-function validate() {
-    console.log('Start validating ...');
+function validate(isVerbose) {
+    if (isVerbose) {
+        console.log('Start validating ...');
+    }
 
     // Load bower.json and make sure it is a locked bower.json file
     var bowerConfigStr = fs.readFileSync("bower.json", {encoding: "utf8"});
@@ -36,7 +39,6 @@ function validate() {
     var deps = {};
     // Make sure all bower_components have match in resolutions block
     allDependencies.forEach(function(dep) {
-        //console.log("dep.dirName: %s", dep.dirName);
         var name = dep.dirName;
         if (!(name in bowerConfig.resolutions)) {
             errorsFound++;
@@ -47,7 +49,7 @@ function validate() {
                 errorsFound++;
                 console.error("Commit mismatch found: %s", name);
                 console.error("\tbower_components commit: %s", dep.commit);
-                console.error("\tbower.json commit: %s",bowerConfig.resolutions[name]);
+                console.error("\tbower.json commit: %s", bowerConfig.resolutions[name]);
             }
         }
     });

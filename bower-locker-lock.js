@@ -1,29 +1,28 @@
 #!/usr/bin/env node
 var fs = require('fs');
-var nodePath = require('path');
-var jsonFormat = require('json-format');
-var cwd = process.cwd();
 var bowerInfo = require('./bower-locker-common.js');
+var jsonFormat = require('json-format');
 /* using indent with spaces */
 var formatConfig = {
     type: 'space',
     size: 2
 };
 
-/*
-On `bower-locker lock`:
-* Save copy `bower.json` as `bower-locker.unlocked.json`
- * Make sure bower.json isn't already a locked file
- * Perhaps add 'bower-lock' property to bower.json that can be checked
-* Get the list of ALL flattened dependencies and their current versions / commit id
-* Load `bower.json` into memory as a JS object for manipulation
-* Override resolutions block with entries for each dependency with an exact version specified
-* Optionally, specify all dependencies in main block with exact versions, as well.
-* Add "bower-locker" property to help identify a locked `bower.json` versus an unlocked one
-* Save as `bower.json`
+/**
+ * Function to lock `bower.json` with the components that currently exist within the `bower_components` directory
+ * This is accomplished by:
+ *   * Saving a copy of `bower.json` as `bower-locker.unlocked.json`
+ *   * Getting a list of ALL flattened dependencies, current versions and commit ids within the `bower_components`
+ *   * Load the `bower.json` into memory as a JS object for manipulation
+ *   * Override the `dependencies` and `resolutions` blocks with values specific to the current versions
+ *   * Save the updated (i.e., locked) `bower.json`
+ * @param isVerbose {Boolean} Flag to indicate whether we should log verbosely or not
+ * @return {null}
  */
-function lock() {
-    console.log('Start locking ...');
+function lock(isVerbose) {
+    if (isVerbose) {
+        console.log('Start locking ...');
+    }
 
     // Load bower.json and make sure it is a locked bower.json file
     var bowerConfigStr = fs.readFileSync("bower.json", {encoding: "utf8"});
@@ -47,12 +46,16 @@ function lock() {
         bowerConfig.dependencies[name] = dep.src + "#" + dep.commit; // _source
         bowerConfig.resolutions[name] = dep.commit;
         bowerConfig.bowerLocker.lockedVersions[name] = dep.release;
-        console.log("  %s (%s): %s", name, dep.release, dep.commit);
+        if (isVerbose) {
+            console.log("  %s (%s): %s", name, dep.release, dep.commit);
+        }
     });
     // Create copy of original bower.json
-    fs.writeFileSync("bower-locker.bower.json", jsonFormat(JSON.parse(bowerConfigStr), formatConfig), {encoding: "utf8"});
+    fs.writeFileSync("bower-locker.bower.json", bowerConfigStr, {encoding: "utf8"});
     // Replace bower.json with "locked" version
     fs.writeFileSync("bower.json", jsonFormat(bowerConfig, formatConfig), {encoding: "utf8"});
+
+    console.log("Locking completed.");
 }
 
 module.exports = lock;
