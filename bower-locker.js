@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+'use strict';
+
 var program = require('commander');
 var lockerLock = require('./bower-locker-lock.js');
 var lockerValidate = require('./bower-locker-validate.js');

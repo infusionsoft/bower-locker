@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+'use strict';
+
 var fs = require('fs');
 var bowerInfo = require('./bower-locker-common.js');
 
@@ -9,8 +11,7 @@ var bowerInfo = require('./bower-locker-common.js');
  *     * All the components within the `bower_components` directory are listed within the `bower.json`
  *     * All the components within the `bower.json` exist within the `bower_components` directory
  *     * All components within the `bower_components` directory are of the version specified within `bower.json`
- * @param isVerbose {Boolean} Flag to indicate whether we should log verbosely or not
- * @return {null}
+ * @param {Boolean} isVerbose Flag to indicate whether we should log verbosely or not
  */
 function validate(isVerbose) {
     if (isVerbose) {
@@ -18,10 +19,10 @@ function validate(isVerbose) {
     }
 
     // Load bower.json and make sure it is a locked bower.json file
-    var bowerConfigStr = fs.readFileSync("bower.json", {encoding: "utf8"});
+    var bowerConfigStr = fs.readFileSync('bower.json', {encoding: 'utf8'});
     var bowerConfig = JSON.parse(bowerConfigStr);
     if (!bowerConfig.bowerLocker) {
-        console.warn("The bower.json is not a bower-locker generated file.\n" +
+        console.warn('The bower.json is not a bower-locker generated file.\n' +
         "Please run 'bower-locker lock' before validating");
         process.exit(1);
     }
@@ -42,14 +43,14 @@ function validate(isVerbose) {
         var name = dep.dirName;
         if (!(name in bowerConfig.resolutions)) {
             errorsFound++;
-            console.warn("Missing dependency that exists under bower_components but not in bower.json: %s", name);
+            console.warn('Missing dependency that exists under bower_components but not in bower.json: %s', name);
         } else {
             deps[name] = dep;
             if (bowerConfig.resolutions[name] !== dep.commit) {
                 errorsFound++;
-                console.error("Commit mismatch found: %s", name);
-                console.error("\tbower_components commit: %s", dep.commit);
-                console.error("\tbower.json commit: %s", bowerConfig.resolutions[name]);
+                console.error('Commit mismatch found: %s', name);
+                console.error('\tbower_components commit: %s', dep.commit);
+                console.error('\tbower.json commit: %s', bowerConfig.resolutions[name]);
             }
         }
     });
@@ -57,10 +58,10 @@ function validate(isVerbose) {
     allBowerResolutions.forEach(function(resolution) {
         if (!(resolution.name in deps)) {
             errorsFound++;
-            console.warn("Resolution defined in bower.json has no match under bower_components: %s", resolution.name);
+            console.warn('Resolution defined in bower.json has no match under bower_components: %s', resolution.name);
         }
     });
-    console.log("Validation complete: %s error(s) found.", errorsFound);
+    console.log('Validation complete: %s error(s) found.', errorsFound);
     if (errorsFound) {
         process.exit(1);
     }
