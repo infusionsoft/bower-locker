@@ -33,7 +33,7 @@ This will install a global command of `bower-locker`.
 
 ### lock
 ```bash
-bower-locker lock
+bower-locker lock 
 ```
 Expects to run from within a folder that contains a `bower.json` and a `./bower_components/` folder.
 
@@ -41,11 +41,13 @@ If there is no `bower_components` folder yet, just run `bower install` first to 
 
 It should save a copy of `bower.json` as `bower-locker.bower.json` and then change `bower.json` to be a "locked" version with an additional "bowerLocker" section.  
 
-The "bowerLocker" property object that contains the "lastUpdated" timestamp for when the locked version was generated.  It also contains a "versions" property object within "bowerLocker" which records the versions that were locked in as a version number to more easily know what version we are using for each dependency. 
+The "bowerLocker" property object that contains the "lastUpdated" timestamp for when the locked version was generated.  It also contains a "versions" property object within "bowerLocker" which records the versions that were locked in as a version number to more easily know what version we are using for each dependency.
+
+Using the `-v` flag will output the bower dependency versions that are being locked.
 
 ### unlock
 ```bash
-bower-locker unlock
+bower-locker unlock 
 ```
 Expects to run from within a folder that contains a `bower.json`, `./bower_components/` folder, and a `bower-locker.bower.json`.file.
 
@@ -55,7 +57,7 @@ Use this command to unlock the bower file for manual updates and edits.  When do
 
 ### validate
 ```bash
-bower-locker validate
+bower-locker validate 
 ```
 Expects to run from within a folder that contains a `bower.json`, `./bower_components/` folder, and a `bower-locker.bower.json`.file.
 
@@ -64,3 +66,13 @@ It will check that `bower.json` is a locked bower file.  If so, it will check th
 It will report and new or missing components, and any version differences.
 
 Run validate to make sure that all `bower_components` were installed as expected.
+
+### status
+```bash
+bower-locker status 
+```
+Expects to run from within a folder that contains a `bower.json`.
+
+It will report whether or not the `bower.json` is a locked bower file, and the time it was locked.
+
+Using the `-v` flag will also output the locked bower dependency versions.
