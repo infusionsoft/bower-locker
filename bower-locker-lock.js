@@ -41,6 +41,9 @@ function lock(isVerbose) {
     bowerConfig.bowerLocker = {lastUpdated: (new Date()).toISOString(), lockedVersions: {}};
     bowerConfig.resolutions = {};
     bowerConfig.dependencies = {};
+    // Remove devDependency section to prevent version collision
+    delete bowerConfig.devDependencies;
+
     dependencies.forEach(function(dep) {
         // NOTE: Use dirName as the dependency name as it is more accurate than .bower.json properties
         var name = dep.dirName;
