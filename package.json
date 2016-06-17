@@ -1,6 +1,6 @@
 {
   "name": "bower-locker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A command-line tool for locking, unlocking, and validating locked bower files",
   "main": "bower-locker.js",
   "scripts": {
