@@ -1,21 +1,25 @@
 # bower-locker
 
-`bower-locker` is a node module for providing "pseudo"-locking capability for a project leveraging
+`bower-locker` is a node command line tool for providing **"pseudo"-locking** capability for a project leveraging
 [bower](https://bower.io/).
 
-Bower doesn't inherently provide a locking mechanism (see https://github.com/bower/bower/issues/505)
+Bower doesn't inherently provide a locking mechanism (see https://github.com/bower/bower/issues/505).  
+
+Bower does allow you to specify a specific version or commit for a given dependency, and a way to specify how you would like to resolve any conflicts (i.e., within the **resolutions** block).  This can be effective but it is tedious to do manually to both **"lock"** the versions, and the **"unlock"** the versions to get newer updates.
+
+`bower-locker` simply automates that process to make it easier to **"unlock"** and **"lock"** that bower file.  It also provides a way to validate that the files installed after a `bower install` match the desired **"locked"** versions.
 
 ## How does it work?
 
 `bower-locker` reads through all of the subfolders of the `bower_components` directory to examine each components `.bower.json` where it extracts information pertinent to the release that is currently being used.
 
-It then generates a new `bower.json` (saving a copy of the original as `bower-locker.bower.json`) where it defines each direct and indirect dependency (i.e., all components currently in the `bower_components` directory) with an exact commit id, under the `dependencies` block and adds an entry for each in the `resolutions` block in the event that any of them tries to load a conflicting dependency version.
+It then generates a new `bower.json` (saving a copy of the original as `bower-locker.bower.json`) where it defines each direct and indirect dependency (i.e., all components currently in the `bower_components` directory) with an exact commit id, under the **dependencies** block and adds an entry for each in the **resolutions** block in the event that any of them tries to load a conflicting dependency version.
 
-Both the new `bower.json` and the original (saved as `bower-locker.bower.json`) can then be uploaded to the Git repo.
+Both the new `bower.json` and the original (saved as `bower-locker.bower.json`) can then be uploaded to your source code repo.
 
-Anybody pulling down the project, will be able to run `bower install` normally and they "should" get the exact versions of the components previously used.
+Anybody pulling down the project, will be able to run `bower install` normally and they **should** get the exact versions of the components previously used.  The **locked** `bower.json` also has the nice property of making it easy to see when dependent script versions have changed over the course of commits as the version number and commit id will show being updated.  An **unlocked** `bower.json` only shows changes when the **version ranges** are updated.
 
-To validate that intended versions were, in fact, installed, run `bower-locker validate`.  It will again compare the downloaded components with the `bower.json` file.
+To validate that intended versions were installed, run `bower-locker validate`.  It will again compare the downloaded components with the `bower.json` file.
 
 To update the versions used, simply run `bower-locker unlock` to return to the original `bower.json`.  Update the bower config as desired including running `bower install`.  When done, just run `bower-locker lock` again to lock in that new version.
 
@@ -49,7 +53,7 @@ Using the `-v` flag will output the bower dependency versions that are being loc
 ```bash
 bower-locker unlock 
 ```
-Expects to run from within a folder that contains a `bower.json`, `./bower_components/` folder, and a `bower-locker.bower.json`.file.
+Expects to run from within a folder that contains a `bower.json` and a `bower-locker.bower.json`.file.
 
 It will check that `bower.json` is a locked bower file.  If so, it will simply replace `bower.json` with `bower-locker.bower.json`.
 
@@ -59,7 +63,7 @@ Use this command to unlock the bower file for manual updates and edits.  When do
 ```bash
 bower-locker validate 
 ```
-Expects to run from within a folder that contains a `bower.json`, `./bower_components/` folder, and a `bower-locker.bower.json`.file.
+Expects to run from within a folder that contains a `bower.json` and a `./bower_components/` folder.
 
 It will check that `bower.json` is a locked bower file.  If so, it will check through all `bower_components` metadata and compare the components found there with the locked versions within `bower.json`.
 
