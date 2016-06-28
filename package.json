@@ -4,6 +4,10 @@
   "description": "A command-line tool for locking, unlocking, and validating bower files",
   "keywords": ["bower", "lock", "unlock", "validate"],
   "homepage": "https://github.com/infusionsoft/bower-locker",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/infusionsoft/bower-locker.git"
+  },
   "main": "bower-locker.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
