@@ -28,7 +28,7 @@ To update the versions used, simply run `bower-locker unlock` to return to the o
 Install the `bower-locker` module globally:
 
 ```bash
-npm install -g git+ssh://git@github.com/infusionsoft/bower-locker.git
+npm install bower-locker -g
 ```
 
 This will install a global command of `bower-locker`.
