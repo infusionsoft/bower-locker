@@ -74,7 +74,7 @@ function lock(isVerbose) {
 
 function setReleaseValue(bowerConfig,dep, validVersionNumber) {
 	var name = dep.dirName;
-	if(bowerConfig.dependencies[name])
+	if(bowerConfig.dependencies && bowerConfig.dependencies[name])
 	{
 		bowerConfig.bowerLocker.originalVersions.dependencies[name] = bowerConfig.dependencies[name];
 		
@@ -83,7 +83,7 @@ function setReleaseValue(bowerConfig,dep, validVersionNumber) {
 											: bowerConfig.dependencies[name];		
 	}
 	
-	if(bowerConfig.devDependencies[name])		
+	if(bowerConfig.devDependencies && bowerConfig.devDependencies[name])		
 	{
 		bowerConfig.bowerLocker.originalVersions.devDependencies[name] = bowerConfig.devDependencies[name];
 		
