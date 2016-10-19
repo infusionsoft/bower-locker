@@ -11,9 +11,12 @@ var cwd = process.cwd();
  * @returns {{name: String, commit: String, release: String, src: String, originalSrc: String}}
  */
 function mapDependencyData(bowerInfo) {
+	var commitValue = bowerInfo._resolution
+						? bowerInfo._resolution.commit
+						: '';
     return {
         name: bowerInfo.name,
-        commit: bowerInfo._resolution.commit,
+        commit: commitValue,
         release: bowerInfo._release,
         src: bowerInfo._source,
         originalSrc: bowerInfo._originalSource

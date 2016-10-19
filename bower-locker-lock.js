@@ -4,6 +4,7 @@
 var fs = require('fs');
 var bowerInfo = require('./bower-locker-common.js');
 var jsonFormat = require('json-format');
+var semver = require('semver');
 /* using indent with spaces */
 var formatConfig = {
     type: 'space',
@@ -34,25 +35,34 @@ function lock(isVerbose) {
         process.exit(1);
     }
 
+
     // Load all dependencies from the bower_components folder
     var dependencies = bowerInfo.getAllDependencies();
 
-    // Create new bower config from existing
-    bowerConfig.bowerLocker = {lastUpdated: (new Date()).toISOString(), lockedVersions: {}};
-    bowerConfig.resolutions = {};
-    bowerConfig.dependencies = {};
-    // Remove devDependency section to prevent version collision
-    delete bowerConfig.devDependencies;
-
+	bowerConfig.bowerLocker = {
+		lastUpdated: (new Date()).toISOString(),
+		//For future improvements
+		originalVersions: {
+			dependencies: {},
+			devDependencies: {}
+		}
+	};
+	
+	//Iterate over dependecies found and set the version number as it found or as it was if not found. 
     dependencies.forEach(function(dep) {
         // NOTE: Use dirName as the dependency name as it is more accurate than .bower.json properties
-        var name = dep.dirName;
-        bowerConfig.dependencies[name] = dep.src + '#' + dep.commit; // _source
-        bowerConfig.resolutions[name] = dep.commit;
-        bowerConfig.bowerLocker.lockedVersions[name] = dep.release;
-        if (isVerbose) {
-            console.log('  %s (%s): %s', name, dep.release, dep.commit);
-        }
+		var name = dep.dirName;
+		var validVersionNumber = semver.valid(dep.release);
+		
+		if(isVerbose)
+		{
+			if(!validVersionNumber)
+				console.log('err: %s with release number as (%s) not locked !', name, dep.release, dep.commit);
+			else
+				console.log('  %s (%s): %s locked', name, dep.release, dep.commit);
+		}
+				
+		setReleaseValue(bowerConfig, dep, validVersionNumber);
     });
     // Create copy of original bower.json
     fs.writeFileSync('bower-locker.bower.json', bowerConfigStr, {encoding: 'utf8'});
@@ -60,6 +70,27 @@ function lock(isVerbose) {
     fs.writeFileSync('bower.json', jsonFormat(bowerConfig, formatConfig), {encoding: 'utf8'});
 
     console.log('Locking completed.');
+}
+
+function setReleaseValue(bowerConfig,dep, validVersionNumber) {
+	var name = dep.dirName;
+	if(bowerConfig.dependencies[name])
+	{
+		bowerConfig.bowerLocker.originalVersions.dependencies[name] = bowerConfig.dependencies[name];
+		
+		bowerConfig.dependencies[name] = validVersionNumber
+											? dep.release
+											: bowerConfig.dependencies[name];		
+	}
+	
+	if(bowerConfig.devDependencies[name])		
+	{
+		bowerConfig.bowerLocker.originalVersions.devDependencies[name] = bowerConfig.devDependencies[name];
+		
+		bowerConfig.devDependencies[name] = validVersionNumber
+												? dep.release
+												: bowerConfig.devDependencies[name];
+	}
 }
 
 module.exports = lock;

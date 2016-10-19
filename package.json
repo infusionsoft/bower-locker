@@ -19,6 +19,7 @@
   },
   "dependencies": {
     "commander": "~2.9.0",
-    "json-format": "~0.1.2"
+    "json-format": "~0.1.2",
+	"semver": "~1.0.0"
   }
 }
