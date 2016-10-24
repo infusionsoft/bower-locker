@@ -48,6 +48,10 @@ function lock(isVerbose) {
 		}
 	};
 	
+	bowerConfig.resolutions = bowerConfig.resolutions
+								? bowerConfig.resolutions
+								: {};
+	
 	//Iterate over dependecies found and set the version number as it found or as it was if not found. 
     dependencies.forEach(function(dep) {
         // NOTE: Use dirName as the dependency name as it is more accurate than .bower.json properties
@@ -80,7 +84,7 @@ function setReleaseValue(bowerConfig,dep, validVersionNumber) {
 		
 		bowerConfig.dependencies[name] = validVersionNumber
 											? dep.release
-											: bowerConfig.dependencies[name];		
+											: bowerConfig.dependencies[name];											
 	}
 	
 	if(bowerConfig.devDependencies && bowerConfig.devDependencies[name])		
@@ -90,6 +94,13 @@ function setReleaseValue(bowerConfig,dep, validVersionNumber) {
 		bowerConfig.devDependencies[name] = validVersionNumber
 												? dep.release
 												: bowerConfig.devDependencies[name];
+	}
+	
+	if(validVersionNumber)
+	{
+		bowerConfig.resolutions[name] = bowerConfig.resolutions[name]
+											? bowerConfig.resolutions[name]
+											: dep.release;
 	}
 }
 
