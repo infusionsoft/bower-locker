@@ -63,12 +63,18 @@ function getBowerFolder() {
 function getAllDependencies() {
     var folder = './' + getBowerFolder();
     var bowerDependencies = fs.readdirSync(folder, {encoding: 'utf8'});
-    return bowerDependencies.map(function(dirname) {
+
+    var dependencyInfos = [];
+    bowerDependencies.forEach(function(dirname) {
         var filepath = nodePath.resolve(cwd, folder, dirname, '.bower.json');
-        var dependencyInfo = getDependency(filepath);
-        dependencyInfo.dirName = dirname;
-        return dependencyInfo;
+        if (fs.existsSync(filepath)) {
+            var dependencyInfo = getDependency(filepath);
+            dependencyInfo.dirName = dirname;
+            dependencyInfos.push(dependencyInfo);
+        }
     });
+
+    return dependencyInfos;
 }
 
 module.exports = {
