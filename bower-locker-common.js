@@ -37,12 +37,18 @@ function getDependency(filepath) {
  */
 function getAllDependencies() {
     var bowerDependencies = fs.readdirSync('./bower_components', {encoding: 'utf8'});
-    return bowerDependencies.map(function(dirname) {
+
+    var dependencyInfos = [];
+    bowerDependencies.map(function(dirname) {
         var filepath = nodePath.resolve(cwd, './bower_components', dirname, '.bower.json');
-        var dependencyInfo = getDependency(filepath);
-        dependencyInfo.dirName = dirname;
-        return dependencyInfo;
+        if (fs.existsSync(filepath)) {
+            var dependencyInfo = getDependency(filepath);
+            dependencyInfo.dirName = dirname;
+            dependencyInfos.push(dependencyInfo);
+        }
     });
+
+    return dependencyInfos;
 }
 
 module.exports = {
