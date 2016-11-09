@@ -13,7 +13,7 @@ var cwd = process.cwd();
 function mapDependencyData(bowerInfo) {
     return {
         name: bowerInfo.name,
-        commit: bowerInfo._resolution.commit,
+        commit: bowerInfo._resolution !== undefined ? bowerInfo._resolution.commit : undefined,
         release: bowerInfo._release,
         src: bowerInfo._source,
         originalSrc: bowerInfo._originalSource
