@@ -32,13 +32,39 @@ function getDependency(filepath) {
 }
 
 /**
+ * Gets the Bower RC data
+ * @returns {Object|null} Returns the JSON objects from the file if it's found, null otherwise
+ */
+function getBowerRC() {
+    if (fs.existsSync('.bowerrc')) {
+        return JSON.parse(fs.readFileSync('.bowerrc', {encoding: 'utf8'}));
+    }
+
+    return null;
+}
+
+/**
+ * Gets the folder in which Bower components are stored
+ * @returns {String}
+ */
+function getBowerFolder() {
+    var bowerRC = getBowerRC();
+    if (bowerRC === null || bowerRC.directory === undefined) {
+        return 'bower_components';
+    }
+
+    return bowerRC.directory;
+}
+
+/**
  * Function to return the metadata for all the dependencies loaded within the `bower_components` directory
  * @returns {Object} Returns dependency object for each dependency containing (dirName, commit, release, src, etc.)
  */
 function getAllDependencies() {
-    var bowerDependencies = fs.readdirSync('./bower_components', {encoding: 'utf8'});
+    var folder = './' + getBowerFolder();
+    var bowerDependencies = fs.readdirSync(folder, {encoding: 'utf8'});
     return bowerDependencies.map(function(dirname) {
-        var filepath = nodePath.resolve(cwd, './bower_components', dirname, '.bower.json');
+        var filepath = nodePath.resolve(cwd, folder, dirname, '.bower.json');
         var dependencyInfo = getDependency(filepath);
         dependencyInfo.dirName = dirname;
         return dependencyInfo;
