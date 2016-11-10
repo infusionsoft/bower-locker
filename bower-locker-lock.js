@@ -47,8 +47,9 @@ function lock(isVerbose) {
     dependencies.forEach(function(dep) {
         // NOTE: Use dirName as the dependency name as it is more accurate than .bower.json properties
         var name = dep.dirName;
-        bowerConfig.dependencies[name] = dep.src + '#' + dep.commit; // _source
-        bowerConfig.resolutions[name] = dep.commit;
+        var version = dep.commit !== undefined ? dep.commit : dep.release;
+        bowerConfig.dependencies[name] = dep.src + '#' + version; // _source
+        bowerConfig.resolutions[name] = version;
         bowerConfig.bowerLocker.lockedVersions[name] = dep.release;
         if (isVerbose) {
             console.log('  %s (%s): %s', name, dep.release, dep.commit);
