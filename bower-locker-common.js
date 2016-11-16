@@ -63,6 +63,8 @@ function getBowerFolder() {
 function getAllDependencies() {
     var folder = './' + getBowerFolder();
     var bowerDependencies = fs.readdirSync(folder, {encoding: 'utf8'});
+
+    var dependencyInfos = [];
     bowerDependencies.map(function(dirname) {
         var filepath = nodePath.resolve(cwd, folder, dirname, '.bower.json');
         if (fs.existsSync(filepath)) {
