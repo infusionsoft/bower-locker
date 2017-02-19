@@ -1,6 +1,6 @@
 {
   "name": "bower-locker",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "description": "A command-line tool for locking, unlocking, and validating bower files",
   "keywords": ["bower", "lock", "unlock", "validate"],
   "homepage": "https://github.com/infusionsoft/bower-locker",
