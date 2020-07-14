@@ -16,7 +16,9 @@ function mapDependencyData(bowerInfo) {
         commit: bowerInfo._resolution !== undefined ? bowerInfo._resolution.commit : undefined,
         release: bowerInfo._release,
         src: bowerInfo._source,
-        originalSrc: bowerInfo._originalSource
+        originalSrc: bowerInfo._originalSource,
+        dependencies: Object.keys(bowerInfo.dependencies || {}),
+        devDependencies: Object.keys(bowerInfo.devDependencies || {})
     };
 }
 
@@ -58,7 +60,7 @@ function getBowerFolder() {
 
 /**
  * Function to return the metadata for all the dependencies loaded within the `bower_components` directory
- * @returns {Object} Returns dependency object for each dependency containing (dirName, commit, release, src, etc.)
+ * @returns {Array} Returns dependency object for each dependency containing (dirName, commit, release, src, etc.)
  */
 function getAllDependencies() {
     var folder = './' + getBowerFolder();
@@ -77,8 +79,60 @@ function getAllDependencies() {
     return dependencyInfos;
 }
 
+/**
+ * Recursively collects dependency info for root dependencies and their dependencies. Collected dependencies are
+ * removed from dependenciesMap to avoid duplication
+ * @param {Object} dependenciesMap Map of all uncollected dependencies
+ * @param {Array} roots Dependency names
+ * @returns {Array} dependency infos
+ */
+function collectDependencies(dependenciesMap, roots) {
+    return roots.reduce(function(dependencies, dependencyName) {
+        if (dependenciesMap[dependencyName]) {
+            var dependencyInfo = dependenciesMap[dependencyName];
+            dependenciesMap[dependencyName] = null;
+            dependencies.push(dependencyInfo);
+            dependencies = dependencies.concat(collectDependencies(dependenciesMap, dependencyInfo.dependencies));
+        }
+
+        return dependencies;
+    }, []);
+}
+
+/**
+ * Function to return the metadata for dependencies loaded within the `bower_components` directory, bucketted by
+ * the type of saved reference to the dependencies in bower.json, i.e., dependencies, devDependencies, or unsaved
+ * @returns {Object} Returns object with `dependencies`, `devDependencies`, and `unsaved` arrays containing dependency
+ *     objects for each project. Projects that are directly or indirectly required by both dependencies and
+ *     devDependencies are returned only in `dependencies` to avoid duplication
+ */
+function getDependenciesByRef() {
+    var dependenciesMap = getAllDependencies().reduce(function(dependenciesMap, dep) {
+        dependenciesMap[dep.dirName] = dep;
+        return dependenciesMap;
+    }, {});
+
+    var projectInfo = getDependency('./bower.json');
+    var dependencies = collectDependencies(dependenciesMap, projectInfo.dependencies);
+    var devDependencies = collectDependencies(dependenciesMap, projectInfo.devDependencies);
+    var unsaved = Object.keys(dependenciesMap).reduce(function(unsaved, key) {
+        if (dependenciesMap[key]) {
+            unsaved.push(dependenciesMap[key]);
+        }
+
+        return unsaved;
+    }, []);
+
+    return {
+        dependencies: dependencies,
+        devDependencies: devDependencies,
+        unsaved: unsaved
+    };
+}
+
 module.exports = {
     getAllDependencies: getAllDependencies,
+    getDependenciesByRef: getDependenciesByRef,
     getDependency: getDependency,
     mapDependencyData: mapDependencyData
 };

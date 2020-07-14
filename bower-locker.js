@@ -21,9 +21,10 @@ program
     .command('validate', 'validate that the currently locked bower.json matches the bower_components')
     .command('status', 'show the current status of the bower.json whether locked or not')
     .option('-v, --verbose', 'turn on verbose output')
+    .option('-s, --saved', 'lock only saved dependencies and devDependencies, warn on unsaved projects')
     .action(function(cmd) {
         if (cmd in bowerLocker) {
-            return bowerLocker[cmd](program.verbose);
+            return bowerLocker[cmd](program.verbose, program.saved);
         } else {
             console.error("Unknown bower-lock command.  Run 'bower-lock -h' to see options.");
             process.exit(1);
